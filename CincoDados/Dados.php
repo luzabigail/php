@@ -19,54 +19,85 @@ $tcharDados = [
 
 /* Funciones auxiliares */
 
-/**
- *  Genera un array con valores de dados 1..6
- * @param int $numdados - tamaño de array generado
- * @return int[] array degenerado
- */
-function generarDados(int $numdados): array
+
+function generarDados($numdados): array
 {
-  
-  return [];
+  $valores = [];
+  for ($i = 0; $i < $numdados; $i++) {
+    // Valores del dado
+    $valores[] = random_int(1, 6);
+  }
+  return $valores;
 }
 
-/**
- * Calcula el valor de los datos
- * Suma de todos los valores menos el mas alto y el mas bajo
- * @param array $tdados
- * @return int
- */
 function calcularPuntos( array $tdados): int
 {
-   return 0;
+  
+  $sum = array_sum($tdados);
+  // Quito el valor máximo y mínimo
+  $sum = $sum - max($tdados) - min($tdados);
+  return $sum;
 }
 
-/**
- * Gemera um mensaje indicando el jugador ganador o si ha habido empate
- * @param int $puntos1  - puntos del primer jugador
- * @param int $puntos2  - puntos del segundo jugador
- * @return string - Mensaje generado
- */
-function generarMensajeGanador(int $puntos1, int $puntos2): string
+// Otra forma de calcular
+function calcularPuntos2( array $tdados): int
 {
-  
-  return " SIN RESOLVER ";
+  sort($tdados);
+  array_shift($tdados); // Quito el primero
+  array_pop($tdados);   // Quito el último
+  $sum = array_sum($tdados);
+  return $sum;
+}
+
+
+
+function generarMensajeGanador($puntos1, $puntos2): string
+{
+  $msg = "";
+  if ($puntos1 == $puntos2) {
+    $msg = " Han empatado los jugadores";
+  } else {
+    if ($puntos1 > $puntos2) {
+      $msg = " Ha Ganado el Jugador 1";
+    } else {
+      $msg = " Ha Ganado el Jugador 2";
+    }
+  }
+  return $msg;
 }
 
 // Función que genera un mensaje para múltiples ganadores
 // Recibe un lista de parámetros variables
-/**
- *   Genera el hmtl con la imagne asociado a el valor del dado
- * @param array $tdados - valores de los dados
- * @return string - cadena html donde se incluye el caracter asociado a valor de cada dado
- */
+function generarMensajeGanadorvar(...$puntos): string
+{
+  // Máximo de puntos 
+  $maxpuntos = max ($puntos);
+  // Lista de jugadores con esos puntos, puede existir empate
+  $ganadores=[];
+  foreach ( $puntos as $clave => $valor){
+    if ( $valor == $maxpuntos){
+       $ganadores[] = $clave;
+    }
+  }
+  
+  if ( count($ganadores) > 1){
+    $msg = " Han empatado los jugadores ";
+    foreach ($ganadores as $value){
+      $msg .= ($value+1)." ";
+    }
+  } else {
+      $msg = " Ha Ganado el Jugador ". ($ganadores[0]+1);
+    }
+  return $msg;
+}
+
 function generarImagenes( array $tdados): string
 {
   $msg = "";
   global $tcharDados;
-
-   $msg .= "<span style='font-size:100px;'>" . $tcharDados[1] . "</span>";
-  
+  foreach ($tdados as $valor) {
+    $msg .= "<span style='font-size:100px;'>" . $tcharDados[$valor] . "</span>";
+  }
   return $msg;
 }
 
@@ -74,11 +105,12 @@ function generarImagenes( array $tdados): string
 
 $dadosJugador1 = generarDados(NUMDADOS);
 $dadosJugador2 = generarDados(NUMDADOS);
+$dadosJugador3 = generarDados(NUMDADOS);
 $puntosJugado1 = calcularPuntos($dadosJugador1);
 $puntosJugado2 = calcularPuntos($dadosJugador2);
+$puntosJugado3 = calcularPuntos($dadosJugador3);
 
-
-$msgGanador    = generarMensajeGanador($puntosJugado1, $puntosJugado2);
+$msgGanador    = generarMensajeGanadorvar($puntosJugado1, $puntosJugado2,$puntosJugado3);
 
 ?>
 <!DOCTYPE html>
@@ -116,6 +148,14 @@ $msgGanador    = generarMensajeGanador($puntosJugado1, $puntosJugado2);
 
         </td>
         <th> <?= $puntosJugado2 ?> puntos</th>
+      </tr>
+      <tr>
+        <th>Jugador 3</th>
+        <td style="padding: 10px; background-color: green;">
+          <?= generarImagenes($dadosJugador3); ?>
+
+        </td>
+        <th> <?= $puntosJugado3 ?> puntos</th>
       </tr>
       <tr>
         <th>Resultado</th>

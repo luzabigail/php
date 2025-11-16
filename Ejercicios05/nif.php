@@ -27,6 +27,10 @@ function calculaNIF(int $digitos): String
 		</form>
 	<?php
 	} else {
+		/*ctype_digit() en PHP es una función que verifica si todos los caracteres de 
+		una cadena son dígitos decimales (0-9) y devuelve true si lo son, o false en 
+		caso contrario. Es importante notar que esta función solo verifica caracteres 
+		numéricos, no valores numéricos completos como números negativos o decimale */
 		if (!empty($_POST["dni"]) && ctype_digit($_POST["dni"]) ) {
 			$numdni   = $_POST["dni"];
 			$letradni = calculaNIF($numdni);
